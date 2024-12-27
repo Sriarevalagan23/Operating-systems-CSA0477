@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+#define FRAME_SIZE 3
+#define PAGE_COUNT 8
+
+void lru_page_replacement(int pages[], int n) {
+    int frame[FRAME_SIZE] = {-1, -1, -1};
+    int page_faults = 0;
+
+    for (int i = 0; i < n; i++) {
+        int found = 0, lru = -1, oldest = 0;
+        
+        // Check if page is already in memory
+        for (int j = 0; j < FRAME_SIZE; j++) {
+            if (frame[j] == pages[i]) {
+                found = 1;
+                break;
+            }
+        }
+        
+        if (!found) {
+            page_faults++;
+            for (int j = 0; j < FRAME_SIZE; j++) {
+                if (frame[j] == -1) {
+                    frame[j] = pages[i];
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) {
+                for (int j = 0; j < FRAME_SIZE; j++) {
+                    int age = 0;
+                    for (int k = i-1; k >= 0; k--) {
+                        if (pages[k] == frame[j]) break;
+                        age++;
+                    }
+                    if (age > oldest) {
+                        oldest = age;
+                        lru = j;
+                    }
+                }
+                frame[lru] = pages[i];
+            }
+        }
+
+        // Print the current state of the frames
+        printf("Frames: ");
+        for (int j = 0; j < FRAME_SIZE; j++) printf("%d ", frame[j]);
+        printf("\n");
+    }
+    printf("\nTotal Page Faults: %d\n", page_faults);
+}
+
+int main() {
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4};
+    lru_page_replacement(pages, PAGE_COUNT);
+    return 0;
+}
