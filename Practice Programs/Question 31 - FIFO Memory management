@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+#define FRAME_SIZE 3
+#define PAGE_COUNT 8
+
+void fifo_page_replacement(int pages[], int n) {
+    int frame[FRAME_SIZE] = {-1, -1, -1};
+    int idx = 0, page_faults = 0, page_hits = 0;
+
+    for (int i = 0; i < n; i++) {
+        int page_found = 0;
+        for (int j = 0; j < FRAME_SIZE; j++) {
+            if (frame[j] == pages[i]) {
+                page_found = 1;
+                page_hits++;
+                break;
+            }
+        }
+        if (!page_found) {
+            frame[idx] = pages[i];
+            idx = (idx + 1) % FRAME_SIZE;
+            page_faults++;
+        }
+    }
+
+    float hit_ratio = (float)page_hits / n;
+    float fault_ratio = (float)page_faults / n;
+
+    printf("Page Hit Ratio: %.2f\n", hit_ratio);
+    printf("Page Fault Ratio: %.2f\n", fault_ratio);
+}
+
+int main() {
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4};
+    fifo_page_replacement(pages, PAGE_COUNT);
+    return 0;
+}
