@@ -1,0 +1,53 @@
+#include <stdio.h>
+
+#define MAX_RECORDS 5
+
+typedef struct {
+    int recordID;
+    char data[50];
+} Record;
+
+void write_records(Record file[]) {
+    for (int i = 0; i < MAX_RECORDS; i++) {
+        printf("Enter data for record %d: ", i + 1);
+        file[i].recordID = i + 1;
+        fgets(file[i].data, sizeof(file[i].data), stdin);
+    }
+}
+
+void display_records(Record file[]) {
+    for (int i = 0; i < MAX_RECORDS; i++) {
+        printf("Record %d: %s", file[i].recordID, file[i].data);
+    }
+}
+
+void read_record(Record file[]) {
+    int num;
+    printf("Enter record number to read: ");
+    scanf("%d", &num);
+    getchar(); // consume newline
+    if (num > 0 && num <= MAX_RECORDS)
+        printf("Reading Record %d: %s", file[num - 1].recordID, file[num - 1].data);
+    else
+        printf("Invalid record number.\n");
+}
+
+int main() {
+    Record file[MAX_RECORDS];
+    write_records(file);
+
+    int choice;
+    do {
+        printf("\n1. Display all records\n2. Read specific record\n3. Exit\nChoice: ");
+        scanf("%d", &choice);
+        getchar(); // consume newline
+        switch(choice) {
+            case 1: display_records(file); break;
+            case 2: read_record(file); break;
+            case 3: printf("Exiting...\n"); break;
+            default: printf("Invalid choice.\n");
+        }
+    } while(choice != 3);
+
+    return 0;
+}
