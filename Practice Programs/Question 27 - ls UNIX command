@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+
+int main() {
+    struct dirent *entry;
+    DIR *dp = opendir(".");  // Open the current directory
+
+    if (dp == NULL) {
+        perror("opendir");
+        return 1;
+    }
+
+    printf("Listing files and directories:\n");
+    
+    // Loop through the directory entries and print them
+    while ((entry = readdir(dp)) != NULL) {
+        printf("%s\n", entry->d_name);  // Print the name of each entry
+    }
+
+    closedir(dp);  // Close the directory stream
+    return 0;
+}
