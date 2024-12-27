@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define NUM_READERS 5
+#define NUM_WRITERS 2
+
+sem_t mutex, write_lock;
+int read_count = 0;
+
+void *reader(void *arg) {
+    while (1) {
+        sem_wait(&mutex);
+        read_count++;
+        if (read_count == 1) sem_wait(&write_lock); // First reader blocks writers
+        sem_post(&mutex);
+        
+        printf("Reader %ld is reading\n", (long)arg);
+        sleep(1);
+
+        sem_wait(&mutex);
+        read_count--;
+        if (read_count == 0) sem_post(&write_lock); // Last reader releases the write lock
+        sem_post(&mutex);
+
+        sleep(1);
+    }
+}
+
+void *writer(void *arg) {
+    while (1) {
+        sem_wait(&write_lock);  // Writer gets exclusive access
+        printf("Writer %ld is writing\n", (long)arg);
+        sleep(2);
+        sem_post(&
