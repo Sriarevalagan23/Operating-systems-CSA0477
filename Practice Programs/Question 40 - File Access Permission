@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <sys/stat.h>
+
+void print_permissions(mode_t mode) {
+    printf("Permissions: ");
+    // Owner permissions
+    printf("%c", (mode & S_IRUSR) ? 'r' : '-');
+    printf("%c", (mode & S_IWUSR) ? 'w' : '-');
+    printf("%c ", (mode & S_IXUSR) ? 'x' : '-');
+
+    // Group permissions
+    printf("%c", (mode & S_IRGRP) ? 'r' : '-');
+    printf("%c", (mode & S_IWGRP) ? 'w' : '-');
+    printf("%c ", (mode & S_IXGRP) ? 'x' : '-');
+
+    // Other permissions
+    printf("%c", (mode & S_IROTH) ? 'r' : '-');
+    printf("%c", (mode & S_IWOTH) ? 'w' : '-');
+    printf("%c", (mode & S_IXOTH) ? 'x' : '-');
+    printf("\n");
+}
+
+int main() {
+    char filename[100];
+    struct stat file_stat;
+
+    printf("Enter the filename: ");
+    scanf("%s", filename);
+
+    // Get the file status
+    if (stat(filename, &file_stat) == -1) {
+        perror("Error getting file status");
+        return 1;
+    }
+
+    // Print the permissions
+    print_permissions(file_stat.st_mode);
+
+    return 0;
+}
