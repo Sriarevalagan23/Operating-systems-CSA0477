@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_FILES 5
+#define MAX_FILENAME_LENGTH 100
+
+typedef struct { char filename[MAX_FILENAME_LENGTH]; } File;
+typedef struct { File files[MAX_FILES]; int file_count; } Directory;
+
+int main() {
+    Directory dir = {{}, 0};  
+    char *filenames[] = {"file1.txt", "file2.txt", "file3.txt", "file4.txt", "file5.txt"};
+    
+    // Create files
+    for (int i = 0; i < 5; i++) {
+        if (dir.file_count < MAX_FILES) {
+            strncpy(dir.files[dir.file_count++].filename, filenames[i], MAX_FILENAME_LENGTH);
+            printf("File '%s' created.\n", filenames[i]);
+        }
+    }
+
+    // List files
+    printf("\nFiles in the directory:\n");
+    for (int i = 0; i < dir.file_count; i++) {
+        printf("%s\n", dir.files[i].filename);
+    }
+
+    // Delete files
+    printf("\nDeleting 'file2.txt' and 'file4.txt'\n");
+    for (int i = 0; i < dir.file_count; i++) {
+        if (strcmp(dir.files[i].filename, "file2.txt") == 0 || strcmp(dir.files[i].filename, "file4.txt") == 0) {
+            for (int j = i; j < dir.file_count - 1; j++) {
+                strncpy(dir.files[j].filename, dir.files[j + 1].filename, MAX_FILENAME_LENGTH);
+            }
+            dir.file_count--;
+            i--;  // Adjust index after shift
+        }
+    }
+
+    // List remaining files
+    printf("\nFiles in the directory after deletion:\n");
+    for (int i = 0; i < dir.file_count; i++) {
+        printf("%s\n", dir.files[i].filename);
+    }
+
+    return 0;
+}
