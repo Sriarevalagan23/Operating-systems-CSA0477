@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+int main() {
+    int n = 4, bt[] = {10, 5, 8, 4}, pr[] = {2, 1, 3, 4}, wt[4] = {0}, tat[4];
+    int total_wt = 0, total_tat = 0;
+
+    // Sort processes by priority
+    for (int i = 0; i < n - 1; i++)
+        for (int j = i + 1; j < n; j++)
+            if (pr[i] > pr[j]) {
+                int temp = pr[i]; pr[i] = pr[j]; pr[j] = temp;
+                temp = bt[i]; bt[i] = bt[j]; bt[j] = temp;
+            }
+
+    for (int i = 1; i < n; i++) wt[i] = wt[i - 1] + bt[i - 1];
+    for (int i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i];
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    // Display each process's waiting time and turnaround time
+    printf("PID\tWT\tTAT\n");
+    for (int i = 0; i < n; i++) 
+        printf("P%d\t%d\t%d\n", i + 1, wt[i], tat[i]);
+
+    // Display average waiting time and turnaround time
+    printf("Avg WT: %.2f, Avg TAT: %.2f\n", (float)total_wt / n, (float)total_tat / n);
+    return 0;
+}
+
+
+
+
+
