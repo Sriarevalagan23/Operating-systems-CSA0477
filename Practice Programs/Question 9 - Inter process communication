@@ -1,0 +1,37 @@
+Writer Process
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#define SHM_SIZE 1024
+
+int main() {
+    int shmid = shmget(1234, SHM_SIZE, 0666 | IPC_CREAT);
+    char *shm_ptr = (char *)shmat(shmid, NULL, 0);
+    printf("Enter message: ");
+    fgets(shm_ptr, SHM_SIZE, stdin);
+    shmdt(shm_ptr);
+    return 0;
+}
+
+Reader Process:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#define SHM_SIZE 1024
+
+int main() {
+    int shmid = shmget(1234, SHM_SIZE, 0666);
+    char *shm_ptr = (char *)shmat(shmid, NULL, 0);
+    printf("Message: %s", shm_ptr);
+    shmdt(shm_ptr);
+    return 0;
+}
+
+
+
