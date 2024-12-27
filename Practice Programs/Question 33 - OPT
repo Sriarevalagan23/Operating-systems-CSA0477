@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+#define FRAME_SIZE 3
+#define PAGE_COUNT 8
+
+int find_optimal(int frame[], int pages[], int n, int current) {
+    int farthest = -1, idx = -1;
+    for (int i = 0; i < FRAME_SIZE; i++) {
+        int j;
+        for (j = current + 1; j < n; j++) {
+            if (frame[i] == pages[j]) break;
+        }
+        if (j == n) return i; // Page not found in future
+        if (j > farthest) { farthest = j; idx = i; }
+    }
+    return idx;
+}
+
+void optimal_page_replacement(int pages[], int n) {
+    int frame[FRAME_SIZE] = {-1, -1, -1}, page_faults = 0, page_hits = 0;
+    
+    for (int i = 0; i < n; i++) {
+        int found = 0;
+        for (int j = 0; j < FRAME_SIZE; j++) {
+            if (frame[j] == pages[i]) { found = 1; break; }
+        }
+        if (!found) {
+            page_faults++;
+            int idx = -1;
+            for (int j = 0; j < FRAME_SIZE; j++) {
+                if (frame[j] == -1) { idx = j; break; }
+            }
+            if (idx == -1) idx = find_optimal(frame, pages, n, i);
+            frame[idx] = pages[i];
+        } else {
+            page_hits++;
+        }
+    }
+    
+    // Display page hit and page fault ratios
+    float hit_ratio = (float)page_hits / n;
+    float fault_ratio = (float)page_faults / n;
+  
+    printf("Page Hit Ratio: %.2f\n", hit_ratio);
+    printf("Page Fault Ratio: %.2f\n", fault_ratio);
+}
+
+int main() {
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4};
+    optimal_page_replacement(pages, 8);
+    return 0;
+}
