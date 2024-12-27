@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int head = 50, seek = 0, req[] = {18, 39, 55, 58, 90};
+    printf("%d", head);
+    for (int i = 0; i < 5; i++) { seek += abs(req[i] - head); head = req[i]; printf(" -> %d", head); }
+    printf("\nTotal seek time: %d\n", seek);
+    return 0;
+}
