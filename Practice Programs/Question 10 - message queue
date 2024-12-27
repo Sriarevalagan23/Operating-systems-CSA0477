@@ -1,0 +1,53 @@
+Writer Process:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+
+#define MAX_TEXT 100
+
+struct message {
+    long msg_type;
+    char msg_text[MAX_TEXT];
+};
+
+int main() {
+    int msgid = msgget(1234, 0666 | IPC_CREAT);  // Create or access message queue
+    struct message msg;
+    msg.msg_type = 1;
+
+    printf("Enter message: ");
+    fgets(msg.msg_text, MAX_TEXT, stdin);
+
+    msgsnd(msgid, &msg, sizeof(msg.msg_text), 0);  // Send message to the queue
+    return 0;
+}
+
+Reader Process:
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+#define MAX_TEXT 100
+
+struct message {
+    long msg_type;
+    char msg_text[MAX_TEXT];
+};
+
+int main() {
+    int msgid = msgget(1234, 0666);  // Access message queue
+    struct message msg;
+
+    msgrcv(msgid, &msg, sizeof(msg.msg_text), 1, 0);  // Receive message
+    printf("Message received: %s\n", msg.msg_text);
+
+    msgctl(msgid, IPC_RMID, NULL);  // Clean up and remove message queue
+    return 0;
+}
+
