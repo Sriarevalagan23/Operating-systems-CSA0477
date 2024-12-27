@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+
+#define FILE_NAME "employee.dat"
+
+typedef struct {
+    int id;
+    char name[50];
+    float salary;
+} Employee;
+
+void add_employee(FILE *file, Employee *emp) {
+    fseek(file, 0, SEEK_END);  // Move to the end of the file
+    fwrite(emp, sizeof(Employee), 1, file);
+}
+
+void display_employees(FILE *file) {
+    fseek(file, 0, SEEK_SET);  // Move to the beginning of the file
+    Employee emp;
+    while (fread(&emp, sizeof(Employee), 1, file))
+        printf("ID: %d, Name: %s, Salary: %.2f\n", emp.id, emp.name, emp.salary);
+}
+
+void update_employee(FILE *file, int id, Employee *new_emp) {
+    fseek(file, (id - 1) * sizeof(Employee), SEEK_SET);
+    fwrite(new_emp, sizeof(Employee), 1, file);
+}
+
+int main() {
+    FILE *file = fopen(FILE_NAME, "rb+");
+    if (!file) file = fopen(FILE_NAME, "wb+");
+    
+    Employee emp1 = {1, "John Doe", 50000}, emp2 = {2, "Jane Smith", 60000};
+    add_employee(file, &emp1);
+    add_employee(file, &emp2);
+    display_employees(file);
+
+    emp2.salary = 65000;
+    update_employee(file, 2, &emp2);
+    display_employees(file);
+
+    fclose(file);
+    return 0;
+}
