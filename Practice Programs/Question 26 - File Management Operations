@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int choice;
+    FILE *file;
+    char text[] = "This is a sample file text.\n";
+
+    while (1) {
+        printf("\n1. Create File\n2. Read File\n3. Append to File\n4. Delete File\n5. Rename File\n6. Exit\nEnter choice: ");
+        scanf("%d", &choice);
+        getchar();  // Clear buffer
+        
+        switch (choice) {
+            case 1:
+                file = fopen("example.txt", "w");
+                if (file) { fprintf(file, "%s", text); fclose(file); printf("File created.\n"); }
+                else perror("Error creating file");
+                break;
+
+            case 2:
+                file = fopen("example.txt", "r");
+                if (file) { while (fgets(text, sizeof(text), file)) printf("%s", text); fclose(file); }
+                else perror("Error reading file");
+                break;
+
+            case 3:
+                file = fopen("example.txt", "a");
+                if (file) { fprintf(file, "Appended text.\n"); fclose(file); printf("Text appended.\n"); }
+                else perror("Error appending to file");
+                break;
+
+            case 4:
+                if (remove("example.txt") == 0) printf("File deleted.\n");
+                else perror("Error deleting file");
+                break;
+
+            case 5:
+                if (rename("example.txt", "new_example.txt") == 0) printf("File renamed.\n");
+                else perror("Error renaming file");
+                break;
+
+            case 6:
+                exit(0);
+            
+            default: 
+                printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
