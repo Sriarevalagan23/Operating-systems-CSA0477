@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+#define MEMORY_SIZE 5
+
+typedef struct { int size, is_allocated; } Block;
+
+int first_fit(Block blocks[], int num_blocks, int size) {
+    for (int i = 0; i < num_blocks; i++) {
+        if (!blocks[i].is_allocated && blocks[i].size >= size) {
+            blocks[i].is_allocated = 1;
+            printf("Allocated %d units at block %d using First Fit\n", size, i);
+            return i;
+        }
+    }
+    printf("No suitable block for %d units using First Fit\n", size);
+    return -1;
+}
+
+int best_fit(Block blocks[], int num_blocks, int size) {
+    int best_idx = -1;
+    for (int i = 0; i < num_blocks; i++) {
+        if (!blocks[i].is_allocated && blocks[i].size >= size && 
+            (best_idx == -1 || blocks[i].size < blocks[best_idx].size)) {
+            best_idx = i;
+        }
+    }
+    if (best_idx != -1) {
+        blocks[best_idx].is_allocated = 1;
+        printf("Allocated %d units at block %d using Best Fit\n", size, best_idx);
+    } else {
+        printf("No suitable block for %d units using Best Fit\n", size);
+    }
+    return best_idx;
+}
+
+int main() {
+    Block blocks[MEMORY_SIZE] = {{30, 0}, {50, 0}, {20, 0}, {40, 0}, {10, 0}};
+    
+    first_fit(blocks, MEMORY_SIZE, 30);
+    best_fit(blocks, MEMORY_SIZE, 20);
+    first_fit(blocks, MEMORY_SIZE, 10);
+    best_fit(blocks, MEMORY_SIZE, 40);
+
+    return 0;
+}
