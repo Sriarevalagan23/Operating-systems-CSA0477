@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_SUBDIRS 3
+#define MAX_FILES 3
+#define MAX_NAME 100
+
+typedef struct { char filename[MAX_NAME]; } File;
+typedef struct { char name[MAX_NAME]; File files[MAX_FILES]; int count; } Subdir;
+typedef struct { Subdir subdirs[MAX_SUBDIRS]; int count; } Directory;
+
+int create_file(Directory *dir, char *subdir_name, char *filename) {
+    for (int i = 0; i < dir->count; i++) {
+        if (strcmp(dir->subdirs[i].name, subdir_name) == 0 && dir->subdirs[i].count < MAX_FILES) {
+            strcpy(dir->subdirs[i].files[dir->subdirs[i].count++].filename, filename);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int delete_file(Directory *dir, char *subdir_name, char *filename) {
+    for (int i = 0; i < dir->count; i++) {
+        if (strcmp(dir->subdirs[i].name, subdir_name) == 0) {
+            for (int j = 0; j < dir->subdirs[i].count; j++) {
+                if (strcmp(dir->subdirs[i].files[j].filename, filename) == 0) {
+                    for (int k = j; k < dir->subdirs[i].count - 1; k++)
+                        strcpy(dir->subdirs[i].files[k].filename, dir->subdirs[i].files[k + 1].filename);
+                    dir->subdirs[i].count--;
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+void list_files(Directory *dir, char *subdir_name) {
+    for (int i = 0; i < dir->count; i++) {
+        if (strcmp(dir->subdirs[i].name, subdir_name) == 0) {
+            printf("Files in %s:\n", subdir_name);
+            for (int j = 0; j < dir->subdirs[i].count; j++) {
+                printf("%s\n", dir->subdirs[i].files[j].filename);
+            }
+            return;
+        }
+    }
+}
+
+int main() {
+    Directory dir = { .count = 3 };
+    strcpy(dir.subdirs[0].name, "Documents");
+    strcpy(dir.subdirs[1].name, "Images");
+    strcpy(dir.subdirs[2].name, "Videos");
+
+    create_file(&dir, "Documents", "file1.txt");
+    create_file(&dir, "Documents", "file2.txt");
+    create_file(&dir, "Images", "image1.png");
+
+    list_files(&dir, "Documents");
+    list_files(&dir, "Images");
+
+    delete_file(&dir, "Documents", "file2.txt");
+    delete_file(&dir, "Images", "image1.png");
+
+    list_files(&dir, "Documents");
+    list_files(&dir, "Images");
+
+    return 0;
+}
