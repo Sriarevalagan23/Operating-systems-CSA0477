@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int main() {
+    // Step 1: Create a file using open() system call
+    int fd = open("example.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("Error creating file");
+        return 1;
+    }
+    printf("File created successfully with file descriptor: %d\n", fd);
+
+    // Step 2: Write to the file using write() system call
+    char *text = "Hello, this is a test file for demonstrating UNIX system calls!";
+    ssize_t bytes_written = write(fd, text, sizeof(text));
+    if (bytes_written == -1) {
+        perror("Error writing to file");
+        close(fd);
+        return 1;
+    }
+    printf("Written %zd bytes to the file.\n", bytes_written);
+
+    // Step 3: Close the file using close() system call
+    if (close(fd) == -1) {
+        perror("Error closing the file");
+        return 1;
+    }
+    printf("File closed successfully.\n");
+
+    // Step 4: Open the file again for reading using open() system call
+    fd = open("example.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening file for reading");
+        return 1;
+    }
+
+    // Step 5: Read the contents of the file using read() system call
+    char buffer[1024];
+    ssize_t bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+    if (bytes_read == -1) {
+        perror("Error reading from file");
+        close(fd);
+        return 1;
+    }
+
+    // Null-terminate the read data
+    buffer[bytes_read] = '\0';
+    printf("Read from file: %s\n", buffer);
+
+    // Step 6: Close the file after reading
+    if (close(fd) == -1) {
+        perror("Error closing the file after reading");
+        return 1;
+    }
+    printf("File closed after reading.\n");
+
+    return 0;
+}
